@@ -1,0 +1,31 @@
+---
+  
+- hosts: localhost
+  connection: local
+  vars:
+          packages: ['python-pip', 'virtualenv']
+          envs:
+                  TZ: 'Pacific/Auckland'
+          
+  tasks:
+          - name: Install Docker
+            apt:
+                    name: docker.io
+                    state: latest
+          - name: Install Pip
+            apt:
+                    name: "{{ packages }}"
+                    state: latest
+          - name: Install docker module for Python
+            pip:
+                    name: docker
+          - name: Grab plex container.
+            docker_image:
+                    name: plexinc/pms-docker
+          - name: Run Plex container.
+            docker_container:
+                    name: plex
+                    image: plexinc/pms-docker
+                    state: started
+                    network_mode: host
+                    env: "{{ envs }}"
