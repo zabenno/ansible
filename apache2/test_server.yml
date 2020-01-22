@@ -1,0 +1,31 @@
+---
+  
+- hosts: localhost
+  connection: local
+  vars:
+          packages: ['python-pip', 'virtualenv']
+          index_src: "/home/ubuntu/git/ansible/apache2/index.html"
+  tasks:
+          - name: Install Docker
+            apt:
+                    name: docker.io
+                    state: latest
+          - name: Install Pip
+            apt:
+                    name: "{{ packages }}"
+                    state: latest
+          - name: Install docker module for Python
+            pip:
+                    name: docker
+          - name: Grab apache container.
+            docker_image:
+                    name: httpd
+          - name: Run apache2 container.
+            docker_container:
+                    name: apache2
+                    image: httpd
+                    state: started
+                    ports:
+                            - "0.0.0.0:80:80"
+                    volumes:
+                            - "{{ index_src }}:/usr/local/apache2/htdocs/index.html"
