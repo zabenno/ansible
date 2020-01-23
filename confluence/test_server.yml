@@ -1,0 +1,27 @@
+- hosts: localhost
+  connection: local
+  vars:
+          packages: ['python-pip', 'virtualenv']
+          index_src: "/home/ubuntu/git/ansible/apache2/index.html"
+  tasks:
+          - name: Install Docker
+            apt:
+                    name: docker.io
+                    state: latest
+          - name: Install Pip
+            apt:
+                    name: "{{ packages }}"
+                    state: latest
+          - name: Install docker module for Python
+            pip:
+                    name: docker
+          - name: Grab Confluence container.
+            docker_image:
+                    name: atlassian/confluence-server
+          - name: Run Confluence container.
+            docker_container:
+                    name: confluence
+                    image: atlassian/confluence-server
+                    state: started
+                    ports:
+                            - "0.0.0.0:80:8090"
